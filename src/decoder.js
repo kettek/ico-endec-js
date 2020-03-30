@@ -1,9 +1,12 @@
-// ICO.
-const ICO = 1,
-      CUR = 2
+const ICO = require('./ico')
 
-class ICOReader {
+// ICO.
+const formatICO = 1,
+      formatCUR = 2
+
+class Decoder extends ICO {
   constructor(buffer) {
+    super()
     this._bufferOffset = 0
     this._buffer = buffer
     this._iconEntries = []
@@ -39,7 +42,7 @@ class ICOReader {
     }
     buf = this._buffer.readUInt16LE(this._bufferOffset)
     this._bufferOffset += 2
-    if (buf === ICO || buf === CUR) {
+    if (buf === formatICO || buf === formatCUR) {
       this._type = buf
     } else {
       throw 'image type must be ICO or CUR'
@@ -79,20 +82,20 @@ class ICOReader {
     // Read color planes or horizontal hotspot
     buf = this._buffer.readUInt16LE(this._bufferOffset)
     this._bufferOffset += 2
-    if (this._type === ICO) {
+    if (this._type === formatICO) {
       if (buf !== 0 && buf !== 1) {
         throw `Color plane was ${buf}, should be 0 or 1`
       }
       this._iconEntries[target].colorPlanes = buf
-    } else if (this._type === CUR) {
+    } else if (this._type === formatCUR) {
       this._iconEntries[target].horizontalHotspot = buf
     }
     // Read bits per pixel or vertical hotspot
     buf = this._buffer.readUInt16LE(this._bufferOffset)
     this._bufferOffset += 2
-    if (this._type === ICO) {
+    if (this._type === formatICO) {
       this._iconEntries[target].bitsPerPixel = buf
-    } else if (this._type === CUR) {
+    } else if (this._type === formatCUR) {
       this._iconEntries[target].verticalHotspot = buf
     }
     // Read the size of the image data.
@@ -145,4 +148,4 @@ class ICOReader {
   }
 }
 
-module.exports = ICOReader
+module.exports = Decoder
