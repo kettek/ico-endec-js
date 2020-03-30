@@ -5,7 +5,7 @@ const ICO = 1,
 class ICOReader {
   constructor(buffer) {
     this._bufferOffset = 0
-    this._buffer = Buffer.from(buffer)
+    this._buffer = buffer
     this._iconEntries = []
   }
   read() {
@@ -117,16 +117,12 @@ class ICOReader {
       // Overwrite width/height with ICO defined (GIMP stored a 16x16 BMP in an ICO as 16x32... for some reason)
       imageData.writeInt32LE(icon.width, 4)
       imageData.writeInt32LE(icon.height, 8)
-      // Get the bits per pixel (overwriting if file is an ICO)
-      if (this._type === ICO) {
-        imageData.writeUInt16LE(icon.bitsPerPixel, 14)
-      }
       let bitsPerPixel = imageData.readUInt16LE(14)
       // Check if we have BI_BITFIELDS (increases bitmap data offset by 12)
       let hasBitFields = imageData.readUInt32LE(16) === 3
       // Get the count of palettes
       let paletteEntries = imageData.readUInt32LE(32)
-      if (paletteEntries === 0) {
+      if (paletteEntries === 0 && bitsPerPixel !== 32) {
         paletteEntries = Math.pow(2, bitsPerPixel)
       }
       // Get the paletteColorSize -- BITMAPCOREHEADER is 3 bytes, otherwise 4
