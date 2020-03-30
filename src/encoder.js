@@ -1,48 +1,61 @@
 const ICO = require('./ico')
 
 /**
- * icoEndec.
- * Expects data:
- * [ Buffer, Buffer, Buffer ]
+ * Encoder provides a method to encode PNG images into an ICO file. BMP images
+ * do not work as masking is not implemented.
  */
 class Encoder extends ICO {
-  constructor() {
+  /**
+   * 
+   * @param {[Buffer]} imageBuffers An array of image buffers containing images.
+   */
+  constructor(imageBuffers) {
     super()
+    this._imageBuffers = imageBuffers
   }
-  write(imageBuffers) {
+  get buffer() {
+    return this._buffer
+  }
+  /**
+   * encode writes the stored image buffers into the internal buffer storage,
+   * creating the appropriate ICONDIR, ICONDIRENTRY, and data locations.
+   * 
+   * @returns Buffer The resulting Buffer ready to be written to a file.
+   */
+  encode() {
     this._buffer = Buffer.alloc(0)
     this._bufferOffset = 0
     this._imageOffset = 0
     // Write our directory
-    this.writeICONDIR(imageBuffers)
+    this._writeICONDIR()
     // Write our directory entries
-    for (let i = 0; i < imageBuffers.length; i++) {
-      this.writeICONDIRENTRY(imageBuffers, i)
+    for (let i = 0; i < this._imageBuffers.length; i++) {
+      this._writeICONDIRENTRY(i)
     }
     // Write our icon data
-    for (let i = 0; i < imageBuffers.length; i++) {
-      this.writeICONDATA(imageBuffers, i)
+    for (let i = 0; i < this._imageBuffers.length; i++) {
+      this._writeICONDATA(i)
     }
     return this._buffer
   }
-  writeICONDIR(imageBuffers) {
+  _writeICONDIR() {
     const buffer = Buffer.alloc(6)
     buffer.writeUInt16LE(0, 0)
     buffer.writeUInt16LE(1, 2)
-    buffer.writeUInt16LE(imageBuffers.length, 4)
+    buffer.writeUInt16LE(this._imageBuffers.length, 4)
     this._imageOffset += 6
     this._buffer = Buffer.concat([this._buffer, buffer])
   }
-  writeICONDIRENTRY(imageBuffers, index) {
-    const imageData = imageBuffers[index]
+  _writeICONDIRENTRY(index) {
+    const imageData = this._imageBuffers[index]
     if (imageData[0] === 0x89 && imageData[1] === 0x50 && imageData[2] === 0x4E && imageData[3] === 0x47) {
-      this.writeICONDIRENTRY_png(imageBuffers, index)
+      this._writeICONDIRENTRY_png(index)
     } else {
-      this.writeICONDIRENTRY_bmp(imageBuffers, index)
+      this._writeICONDIRENTRY_bmp(index)
     }
   }
-  writeICONDIRENTRY_png(imageBuffers, index) {
-    const imageData = imageBuffers[index]
+  _writeICONDIRENTRY_png(index) {
+    const imageData = this._imageBuffers[index]
     const buffer = Buffer.alloc(16)
     // 8 = start, +4 = chunk length, +4 chunk type(IHDR)
     // Get information
@@ -89,8 +102,8 @@ class Encoder extends ICO {
     this._imageOffset += 16
     this._buffer = Buffer.concat([this._buffer, buffer])
   }
-  writeICONDIRENTRY_bmp(imageBuffers, index) {
-    const imageData = imageBuffers[index]
+  _writeICONDIRENTRY_bmp(index) {
+    const imageData = this._imageBuffers[index]
     const buffer = Buffer.alloc(16)
     // Get information
     let width = imageData.readInt32LE(18)
@@ -113,7 +126,7 @@ class Encoder extends ICO {
       throw 'BMP color planes must be 1'
     }
     if (colorEntries === 0 && bitsPerPixel !== 32) {
-      //colorEntries = Math.pow(2, bitsPerPixel)
+      colorEntries = Math.pow(2, bitsPerPixel)
     }
     if (colorEntries > 256) {
       colorEntries = 0
@@ -136,10 +149,10 @@ class Encoder extends ICO {
     this._imageOffset += 16
     this._buffer = Buffer.concat([this._buffer, buffer])
   }
-  writeICONDATA(imageBuffers, index) {
+  _writeICONDATA(index) {
     let offsetOffset = (6+16) * index + (6 + 12)
     this._buffer.writeUInt32LE(this._imageOffset, offsetOffset)
-    const imageData = imageBuffers[index]
+    const imageData = this._imageBuffers[index]
     if (imageData[0] === 0x89 && imageData[1] === 0x50 && imageData[2] === 0x4E && imageData[3] === 0x47) {
       this._buffer = Buffer.concat([this._buffer, imageData])
       this._imageOffset += imageData.length
