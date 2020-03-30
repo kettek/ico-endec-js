@@ -1,8 +1,6 @@
 // ICO.
 const ICO = 1,
-      CUR = 2,
-      PNG = 1,
-      BMP = 2
+      CUR = 2
 
 class ICOReader {
   constructor(buffer) {
@@ -28,16 +26,9 @@ class ICOReader {
         imageData: null,
       }
       this.readICONDIRENTRY(i)
+      // Read our image data
+      this.readICONDATA(i)
     }
-    // Read our image data
-    this._iconEntries.forEach((icon, i) => {
-      icon.imageData = Buffer.from(this._buffer, icon.imageOffset, icon.imageSize)
-      if (icon.imageData[0] === 0x89 && icon.imageData[1] === 0x50 && icon.imageData[2] === 0x4E && icon.imageData[3] === 0x47) {
-        icon.imageType = PNG
-      } else {
-        icon.imageType = BMP
-      }
-    })
   }
   readICONDIR() {
     let buf
@@ -48,7 +39,7 @@ class ICOReader {
     }
     buf = this._buffer.readUInt16LE(this._bufferOffset)
     this._bufferOffset += 2
-    if (buf === 1 || buf === 2) {
+    if (buf === ICO || buf === CUR) {
       this._type = buf
     } else {
       throw 'image type must be ICO or CUR'
@@ -112,6 +103,49 @@ class ICOReader {
     buf = this._buffer.readUInt32LE(this._bufferOffset)
     this._bufferOffset += 4
     this._iconEntries[target].imageOffset = buf
+  }
+  readICONDATA(index) {
+    const icon = this._iconEntries[index]
+    let imageData = Buffer.from(this._buffer.buffer, icon.imageOffset, icon.imageSize)
+    if (imageData[0] === 0x89 && imageData[1] === 0x50 && imageData[2] === 0x4E && imageData[3] === 0x47) {
+      icon.imageData = imageData
+      icon.imageType = 'png'
+    } else {
+      icon.imageType = 'bmp'
+      // Get the info header size
+      let headerSize = imageData.readUInt32LE(0)
+      // Overwrite width/height with ICO defined (GIMP stored a 16x16 BMP in an ICO as 16x32... for some reason)
+      imageData.writeInt32LE(icon.width, 4)
+      imageData.writeInt32LE(icon.height, 8)
+      // Get the bits per pixel (overwriting if file is an ICO)
+      if (this._type === ICO) {
+        imageData.writeUInt16LE(icon.bitsPerPixel, 14)
+      }
+      let bitsPerPixel = imageData.readUInt16LE(14)
+      // Check if we have BI_BITFIELDS (increases bitmap data offset by 12)
+      let hasBitFields = imageData.readUInt32LE(16) === 3
+      // Get the count of palettes
+      let paletteEntries = imageData.readUInt32LE(32)
+      if (paletteEntries === 0) {
+        paletteEntries = Math.pow(2, bitsPerPixel)
+      }
+      // Get the paletteColorSize -- BITMAPCOREHEADER is 3 bytes, otherwise 4
+      let paletteColorSize = headerSize === 12 ? 3 : 4
+      let colorTableOffset = headerSize + (hasBitFields ? 12 : 0)
+      let colorTableSize = paletteEntries * paletteColorSize
+      // Find the starting address of the pixel data.
+      let pixelDataOffset = colorTableOffset + colorTableSize
+      // Build our bitmap header.
+      let bitmapHeader = Buffer.alloc(14)
+      // Write BM header field.
+      bitmapHeader.writeUInt8(0x42, 0)
+      bitmapHeader.writeUInt8(0x4D, 1)
+      // Write file size
+      bitmapHeader.writeUInt32LE(icon.imageSize+14, 2)
+      // Write pixel data offset.
+      bitmapHeader.writeUInt32LE(pixelDataOffset+14, 10)
+      icon.imageData = Buffer.concat([bitmapHeader, imageData])
+    }
   }
 }
 

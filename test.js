@@ -6,7 +6,8 @@ fs.readFile('./test.ico', (err, data) => {
   let reader = new ICOReader(data)
   reader.read()
   reader._iconEntries.forEach((icon, index) => {
-    fs.writeFile(`${index}.bmp`, icon.imageData, { encoding: null }, err => {
+    //console.log(icon)
+    fs.writeFile(`${index}.${icon.imageType}`, icon.imageData, { encoding: null }, err => {
       if (err) throw err
       console.log('wrote', index)
     })
