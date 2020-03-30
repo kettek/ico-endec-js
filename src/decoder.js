@@ -1,18 +1,18 @@
-const ICO = require('./ico')
+const IconEntry = require('./iconentry')
 
 /**
  * Decoder provides a method to decode ICO files into an object structure
  * containing image data. PNGs are fully supported but BMPs are extracted
  * without the use of their mask.
  */
-class Decoder extends ICO {
+class Decoder {
   /**
    * @param {Buffer} buffer A Buffer containing the contents of an ICO file
    */
   constructor(buffer) {
-    super()
     this._bufferOffset = 0
     this._buffer = buffer
+    this._iconEntries = []
   }
   /**
    * decode reads in the file passed in the constructor and decodes it to the
@@ -25,7 +25,7 @@ class Decoder extends ICO {
     this._readICONDIR()
     // Read our image directory
     for (let i = 0; i < this._imageCount; i++) {
-      this._initEntry(i)
+      this._iconEntries[i] = new IconEntry()
       this._readICONDIRENTRY(i)
       // Read our image data
       this._readICONDATA(i)

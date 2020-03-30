@@ -1,16 +1,13 @@
-const ICO = require('./ico')
-
 /**
  * Encoder provides a method to encode PNG images into an ICO file. BMP images
  * do not work as masking is not implemented.
  */
-class Encoder extends ICO {
+class Encoder {
   /**
    * 
    * @param {[Buffer]} imageBuffers An array of image buffers containing images.
    */
   constructor(imageBuffers) {
-    super()
     this._imageBuffers = imageBuffers
   }
   get buffer() {
