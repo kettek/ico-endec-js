@@ -2,6 +2,7 @@
 class ICO {
     constructor() {
         this._iconEntries = []
+        this._iconCount = 0
     }
     initEntry(index) {
       this._iconEntries[index] = {

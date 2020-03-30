@@ -9,25 +9,13 @@ class Decoder extends ICO {
     super()
     this._bufferOffset = 0
     this._buffer = buffer
-    this._iconEntries = []
   }
   read() {
     // Read our header
     this.readICONDIR()
     // Read our image directory
     for (let i = 0; i < this._imageCount; i++) {
-      this._iconEntries[i] = {
-        width: -1,
-        height: -1,
-        colors: -1,
-        colorPlanes: -1,
-        bitsPerPixel: -1,
-        horizontalHotspot: -1,
-        verticalHotspot: -1,
-        imageSize: -1,
-        imageOffset: -1,
-        imageData: null,
-      }
+      this.initEntry(i)
       this.readICONDIRENTRY(i)
       // Read our image data
       this.readICONDATA(i)
