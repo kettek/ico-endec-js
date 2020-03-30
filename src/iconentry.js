@@ -22,10 +22,10 @@ class IconEntry {
     return this._colors
   }
   get colorPlanes() {
-    return this.colorPlanes
+    return this._colorPlanes
   }
   get bitsPerPixel() {
-    return this.bitsPerPixel
+    return this._bitsPerPixel
   }
   get horizontalHotspot() {
     return this._horizontalHotspot
