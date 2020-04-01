@@ -8,7 +8,15 @@ class Encoder {
    * @param {[Buffer]} imageBuffers An array of image buffers containing images.
    */
   constructor(imageBuffers) {
-    this._imageBuffers = imageBuffers
+    this._imageBuffers = imageBuffers.map(b => {
+      if (b instanceof ArrayBuffer) {
+        return Buffer.from(new Uint8Array(b))
+      } else if (b instanceof Buffer) {
+        return b
+      } else {
+        throw 'Encoder requires ArrayBuffers or Buffers'
+      }
+    })
   }
   get buffer() {
     return this._buffer
