@@ -102,7 +102,7 @@ class Encoder {
     // Write bbp
     buffer.writeUInt16LE(bitsPerPixel, 6)
     // Write image data size
-    buffer.writeUInt16LE(imageData.length, 8)
+    buffer.writeUInt32LE(imageData.length, 8)
 
     this._imageOffset += 16
     this._buffer = Buffer.concat([this._buffer, buffer])
