@@ -47,4 +47,4 @@ class IconEntry {
   }
 }
 
-module.exports = IconEntry
+export default IconEntry

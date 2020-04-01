@@ -1,4 +1,4 @@
-const IconEntry = require('./iconentry')
+import IconEntry from './iconentry'
 
 /**
  * Decoder provides a method to decode ICO files into an object structure
@@ -148,4 +148,4 @@ class Decoder {
   }
 }
 
-module.exports = Decoder
+export default Decoder
