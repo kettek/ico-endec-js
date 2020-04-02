@@ -9,8 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup -c",
-    "preinstall": "npx npm-force-resolutions"
+    "build": "rollup -c"
   },
   "keywords": [],
   "author": "Ketchetwahmeegwun T. Southall",
@@ -20,8 +19,5 @@
     "rollup": "^2.3.2",
     "rollup-plugin-license": "^0.13.0",
     "rollup-plugin-terser": "^5.3.0"
-  },
-  "resolutions": {
-    "minimist": "^1.2.5"
   }
 }
