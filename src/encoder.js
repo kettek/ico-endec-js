@@ -155,7 +155,7 @@ class Encoder {
     this._buffer = Buffer.concat([this._buffer, buffer])
   }
   _writeICONDATA(index) {
-    let offsetOffset = (6+16) * index + (6 + 12)
+    let offsetOffset = 6 + (16 * index) + 12
     this._buffer.writeUInt32LE(this._imageOffset, offsetOffset)
     const imageData = this._imageBuffers[index]
     if (imageData[0] === 0x89 && imageData[1] === 0x50 && imageData[2] === 0x4E && imageData[3] === 0x47) {
