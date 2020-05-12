@@ -1,5 +1,5 @@
 # ICO encoder & decoder
-This JavaScript library provides an encoder and decoder for ICO files. Although this library can encode and decode both BMP and PNG images, BMP endec does not provide bitmasking support, and as such, will not work with some icons. However, PNG support is widespread and has become a more defacto standard for application icons, so this problem is largely moot -- but it still would be nice to have.
+This JavaScript library provides an encoder and decoder for ICO and CUR files. Although this library can encode and decode both BMP and PNG images, BMP endec does not provide bitmasking support, and as such, will not work with some icons. However, PNG support is widespread and has become a more defacto standard for application icons, so this problem is largely moot -- but it still would be nice to have.
 
 ## Encoding
 ### icoEndec.encode([Buffer||ArrayBuffer])
