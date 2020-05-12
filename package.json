@@ -1,6 +1,6 @@
 {
   "name": "ico-endec",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "ICO encoder and decoder library",
   "main": "dist/bundle.js",
   "repository": {
