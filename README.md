@@ -8,9 +8,9 @@ The encode function takes an array of ArrayBuffers or Buffers that contain BMP o
 #### Example
 ```
 const icoEndec   = require('ico-endec')
-const fsPromises = require('fs').Promises
+const fsPromises = require('fs').promises
 
-(async () => {
+;(async () => {
   let icoBuffer = icoEndec.encode([
     await fsPromises.readFile('myIcon-16x16.png'),
     await fsPromises.readFile('myIcon-32x32.png'),
@@ -27,9 +27,9 @@ The decode function takes a Buffer or an ArrayBuffer that holds the binary data 
 #### Example
 ```
 const icoEndec   = require('ico-endec')
-const fsPromises = require('fs').Promises
+const fsPromises = require('fs').promises
 
-(async () => {
+;(async () => {
   let icons = icoEndec.decode(await fsPromises.readFile('myIcon.ico'))
   
   icons.forEach((icon, index) => {
