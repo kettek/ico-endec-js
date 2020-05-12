@@ -6,8 +6,7 @@ export { default as Decoder } from './decoder'
 
 export const decode = (buffer) => {
   let decoder = new Decoder(buffer)
-  decoder.decode()
-  return decoder._iconEntries
+  return decoder.decode()
 }
 
 export const encode = (buffers) => {

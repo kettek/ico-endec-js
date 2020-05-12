@@ -11,7 +11,7 @@ class Decoder {
    */
   constructor(buffer) {
     this._bufferOffset = 0
-    this._buffer = buffer
+    this._buffer = Buffer.from(buffer)
     this._iconEntries = []
   }
   /**
@@ -30,7 +30,7 @@ class Decoder {
       // Read our image data
       this._readICONDATA(i)
     }
-    return this._iconEntries.map(entry=>entry.imageData)
+    return this._iconEntries
   }
   _readICONDIR() {
     let buf
@@ -108,7 +108,7 @@ class Decoder {
   }
   _readICONDATA(index) {
     const icon = this._iconEntries[index]
-    let imageData = Buffer.from(this._buffer.buffer, icon.imageOffset, icon.imageSize)
+    let imageData = this._buffer.slice(icon.imageOffset, icon.imageOffset+icon.imageSize)
     if (imageData[0] === 0x89 && imageData[1] === 0x50 && imageData[2] === 0x4E && imageData[3] === 0x47) {
       icon._imageData = imageData
       icon._imageType = 'png'
