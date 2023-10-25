@@ -73,7 +73,7 @@ class Encoder {
     let colorType = imageData.readUInt8(25)
     let colorEntries = 0
     if (colorType === 3) { // indexed
-      if (imageData[29] !== 'P' && imageData[30] !== 'L' && imageData[31] !== 'T' && imageData[32] !== 'E') {
+      if (imageData[37] !== 'P' && imageData[38] !== 'L' && imageData[39] !== 'T' && imageData[40] !== 'E') {
         throw `PNG's second chunk must be a PLTE if indexed`
       }
       // I guess this is a way to acquire palettes...
