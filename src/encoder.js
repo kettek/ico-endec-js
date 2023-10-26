@@ -77,7 +77,7 @@ class Encoder {
         throw `PNG's second chunk must be a PLTE if indexed`
       }
       // I guess this is a way to acquire palettes...
-      colorEntries = Math.ceil(imageData.readUInt32BE(25) / 3)
+      colorEntries = Math.ceil(imageData.readUInt32BE(26) / 3)
     }
     // Do some validation
     if (width > 256) {
